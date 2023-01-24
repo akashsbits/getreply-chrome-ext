@@ -1,0 +1,23 @@
+{
+  "name": "Getreply Chrome Extension",
+  "version": "1.0",
+  "manifest_version": 3,
+
+  "action": {},
+  "permissions": ["scripting", "tabs", "activeTab"],
+  "host_permissions": ["https://twitter.com/*"],
+  "content_scripts": [
+    {
+      "matches": ["https://twitter.com/*"],
+      "js": ["content-script.js"]
+    }
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "web_accessible_resources": [
+    {
+      "matches": ["https://twitter.com/*"]
+    }
+  ]
+}
