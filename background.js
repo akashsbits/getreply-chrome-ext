@@ -1,9 +1,14 @@
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  // Test api
-  const apiCall =
-    "http://13.233.251.202/wallet/2e272c3f-05d1-4f65-9daf-9106bce286b3/transaction";
+  const url = "http://localhost:3000/";
+  const prompt = { prompt: message };
 
-  fetch(apiCall)
+  fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(prompt),
+  })
     .then((response) => response.json())
     .then((data) => sendResponse(data))
     .catch((err) => console.log(err));

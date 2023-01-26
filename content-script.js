@@ -1,3 +1,12 @@
+const reactions = [
+  { reaction: "🙂", type: "Agree" },
+  { reaction: "🔥", type: "Joke" },
+  { reaction: "💡", type: "Idea" },
+  { reaction: "👎", type: "Disagree" },
+  { reaction: "❓", type: "Question" },
+  // add more reactions...
+];
+
 const mutationObserver = (selector, elmHandler) => {
   // Execute the cb when DOM changes occur
   return new MutationObserver((mutations_list) => {
@@ -16,60 +25,88 @@ const mutationObserver = (selector, elmHandler) => {
   });
 };
 
-const getTextbox = (el) => {
-  const inputEl = el.querySelector(
-    'div[data-testid^="tweetTextarea_"][role="textbox"]'
-  );
-  if (inputEl) {
-    return inputEl;
+const getElement = (el, selector) => {
+  const _el = el.querySelector(selector);
+
+  if (_el) {
+    return _el;
   }
   if (!el.parentElement) {
     return null;
   } else {
-    return getTextbox(el.parentElement);
+    return getElement(el.parentElement, selector);
   }
 };
 
-const addAIButtons = (elm) => {
-  const el = elm.parentElement;
+const insertText = (el, text) => {
+  el.focus();
+  // Need to change: execCommand deprecated
+  document.execCommand("insertText", false, text.trim());
+};
 
-  const btn1 = document.createElement("button");
-  btn1.textContent = "🙂 Agree";
-  const btn2 = document.createElement("button");
-  btn2.textContent = "🔥 Joke";
-  const btn3 = document.createElement("button");
-  btn3.textContent = "💡 Idea";
-  const btn4 = document.createElement("button");
-  btn4.textContent = "👎 Disagree";
-  const btn5 = document.createElement("button");
-  btn5.textContent = "❓ Question";
+const getPrompt = (reaction, tweet, promptFor) => {
+  switch (promptFor) {
+    case "twitter":
+      return `Give a ${reaction} reply for this tweet ${tweet}`;
+    /* Linkedin */
+    /* Gmail */
+  }
+};
 
+const createButtons = (el, contentSelector, textboxSelector, promptFor) => {
   const div = document.createElement("div");
   div.setAttribute("id", "ai-buttons");
-  div.appendChild(btn1);
-  div.appendChild(btn2);
-  div.appendChild(btn3);
-  div.appendChild(btn4);
-  div.appendChild(btn5);
 
-  for (const child of div.children) {
-    child.onclick = async () => {
-      console.log(getTextbox(elm).textContent);
-      //   const text = await getContent();
+  for (let i = 0; i < reactions.length; i++) {
+    const { reaction, type } = reactions[i];
+    const btn = document.createElement("button");
+    btn.textContent = `${reaction} ${type}`;
+
+    btn.onclick = async () => {
+      const reaction = type;
+      const textbox = getElement(el, textboxSelector);
+      const content = getElement(el, contentSelector).textContent;
+      const prompt = getPrompt(reaction, content, promptFor);
+      const text = await getReply(prompt);
+
+      if (text) insertText(textbox, text.reply);
     };
+
+    div.appendChild(btn);
   }
 
-  el.prepend(div);
+  return div;
 };
 
-const getContent = () => {
+const addButtons = (el) => {
+  /* Twitter */
+  const twitterTextboxSel =
+    'div[data-testid^="tweetTextarea_"][role="textbox"]';
+  const tweetSel = 'div[data-testid="tweetText"]';
+  const twitterBtnsParentSel = 'div[data-testid="toolBar"]';
+
+  const buttons = createButtons(el, tweetSel, twitterTextboxSel, "twitter");
+
+  if (buttons) {
+    const _el = getElement(el, twitterBtnsParentSel).parentElement;
+    _el.prepend(buttons);
+  }
+
+  /* Linkedin */
+  /*************/
+  /*************/
+
+  /* Gmail */
+  /*************/
+  /*************/
+};
+
+const getReply = (prompt) => {
   return new Promise((resolve) => {
-    chrome.runtime.sendMessage({ type: "generate_tweet" }, (response) =>
-      resolve(response)
-    );
+    chrome.runtime.sendMessage(prompt, (response) => resolve(response));
   });
 };
 
-const toolbarElm = mutationObserver('div[data-testid="toolBar"]', addAIButtons);
-const rootElm = document.querySelector("#react-root");
-toolbarElm.observe(rootElm, { subtree: true, childList: true });
+const watchEl = mutationObserver('div[data-testid="tweetButton"]', addButtons);
+const reactRootEl = document.querySelector("#react-root");
+watchEl.observe(reactRootEl, { subtree: true, childList: true });
