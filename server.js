@@ -1,7 +1,9 @@
+require("dotenv").config();
 const express = require("express");
 const { Configuration, OpenAIApi } = require("openai");
 const cors = require("cors");
-require("dotenv").config();
+const notFound = require("./middleware/not-found");
+const error = require("./middleware/error");
 
 const PORT = process.env.PORT || 5000;
 const app = express();
@@ -20,7 +22,7 @@ app.get("/", (req, res) => {
   res.status(200).json({ msg: "Getreply" });
 });
 
-app.post("/", async (req, res) => {
+app.post("/", async (req, res, next) => {
   try {
     const { prompt } = req.body;
 
@@ -39,9 +41,12 @@ app.post("/", async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Something went wrong" });
+    next(err);
   }
 });
+
+app.use(notFound);
+app.use(error);
 
 app.listen(PORT, () => {
   console.log(`Server is listening on port ${PORT}`);
