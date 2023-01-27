@@ -2,6 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const { Configuration, OpenAIApi } = require("openai");
 const cors = require("cors");
+const rateLimit = require("express-rate-limit");
 const notFound = require("./middleware/not-found");
 const error = require("./middleware/error");
 
@@ -11,6 +12,12 @@ const app = express();
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(cors());
+app.use(
+  rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 min
+    max: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
+  })
+);
 
 const configuration = new Configuration({
   apiKey: process.env.API_KEY,
