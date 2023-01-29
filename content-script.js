@@ -25,6 +25,11 @@ const mutationObserver = (selector, elmHandler) => {
   });
 };
 
+const checkDomain = (domain) => {
+  const str = window.location.hostname;
+  return str.includes(domain);
+};
+
 const getElement = (el, selector) => {
   const _el = el.querySelector(selector);
 
@@ -44,18 +49,19 @@ const insertText = (el, text) => {
   document.execCommand("insertText", false, text.trim());
 };
 
-const getPrompt = (reaction, tweet, promptFor) => {
+const getPrompt = (reaction, content, promptFor) => {
   switch (promptFor) {
     case "twitter":
-      return `Give a ${reaction} reply for this tweet ${tweet}`;
-    /* Linkedin */
+      return `Give a ${reaction} reply for this tweet ${content}`;
+    case "linkedin":
+      return `Giva a ${reaction} reply for this post ${content}`;
     /* Gmail */
   }
 };
 
 const createButtons = (el, contentSelector, textboxSelector, promptFor) => {
   const div = document.createElement("div");
-  div.setAttribute("id", "ai-buttons");
+  div.setAttribute("id", "getreply_buttons");
 
   for (let i = 0; i < reactions.length; i++) {
     const { reaction, type } = reactions[i];
@@ -74,12 +80,10 @@ const createButtons = (el, contentSelector, textboxSelector, promptFor) => {
 
     div.appendChild(btn);
   }
-
   return div;
 };
 
-const addButtons = (el) => {
-  /* Twitter */
+const addTwitterButtons = (el) => {
   const twitterTextboxSel =
     'div[data-testid^="tweetTextarea_"][role="textbox"]';
   const tweetSel = 'div[data-testid="tweetText"]';
@@ -87,18 +91,29 @@ const addButtons = (el) => {
 
   const buttons = createButtons(el, tweetSel, twitterTextboxSel, "twitter");
 
-  if (buttons) {
+  if (buttons != null) {
     const _el = getElement(el, twitterBtnsParentSel).parentElement;
     _el.prepend(buttons);
   }
+};
 
-  /* Linkedin */
-  /*************/
-  /*************/
+const addLinkedinButtons = (el) => {
+  const linkedinPostSel = "div.feed-shared-update-v2__description-wrapper";
+  const linkedinBtnsParentSel = "form.comments-comment-box__form";
+  const linkedinTextboxSel =
+    'div[data-test-ql-editor-contenteditable="true"][role="textbox"]';
 
-  /* Gmail */
-  /*************/
-  /*************/
+  const _buttons = createButtons(
+    el,
+    linkedinPostSel,
+    linkedinTextboxSel,
+    "linkedin"
+  );
+
+  if (_buttons != null) {
+    const _el = getElement(el, linkedinBtnsParentSel).parentElement;
+    _el.appendChild(_buttons);
+  }
 };
 
 const getReply = (prompt) => {
@@ -107,6 +122,20 @@ const getReply = (prompt) => {
   });
 };
 
-const watchEl = mutationObserver('div[data-testid="tweetButton"]', addButtons);
-const reactRootEl = document.querySelector("#react-root");
-watchEl.observe(reactRootEl, { subtree: true, childList: true });
+if (checkDomain("twitter")) {
+  const watchEl = mutationObserver(
+    'div[data-testid="tweetButton"]',
+    addTwitterButtons
+  );
+  const reactRootEl = document.querySelector("#react-root");
+  watchEl.observe(reactRootEl, { subtree: true, childList: true });
+}
+
+if (checkDomain("linkedin")) {
+  const watchEl = mutationObserver(
+    "div.comments-comment-box__form-container",
+    addLinkedinButtons
+  );
+  const linkedinRootEl = document.querySelector(".application-outlet");
+  watchEl.observe(linkedinRootEl, { subtree: true, childList: true });
+}

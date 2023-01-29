@@ -5,10 +5,10 @@
 
   "action": {},
   "permissions": ["scripting", "tabs", "activeTab"],
-  "host_permissions": ["https://twitter.com/*"],
+  "host_permissions": ["https://twitter.com/*", "https://www.linkedin.com/*"],
   "content_scripts": [
     {
-      "matches": ["https://twitter.com/*"],
+      "matches": ["https://twitter.com/*", "https://www.linkedin.com/*"],
       "js": ["content-script.js"],
       "css": ["content-script.css"]
     }

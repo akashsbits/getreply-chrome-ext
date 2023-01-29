@@ -1,4 +1,8 @@
-button {
+#getreply_buttons {
+  margin: 5px 0 0 0;
+}
+
+#getreply_buttons button {
   background: transparent;
   color: hsl(350, 81%, 60%);
   font-size: 12px;
