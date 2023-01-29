@@ -4,12 +4,12 @@
 
 #getreply_buttons button {
   background: transparent;
-  color: hsl(350, 81%, 60%);
+  color: hsl(210, 85%, 50%);
   font-size: 12px;
   font-weight: 700;
   padding: 3px 8px;
   cursor: pointer;
   margin-left: 10px;
-  border: 1px solid hsl(350, 81%, 60%);
+  border: 1px solid hsl(210, 85%, 50%);
   border-radius: 100px;
 }

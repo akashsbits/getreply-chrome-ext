@@ -1,11 +1,15 @@
 {
   "name": "Getreply Chrome Extension",
-  "version": "1.0",
+  "version": "1.0.1",
   "manifest_version": 3,
-
-  "action": {},
-  "permissions": ["scripting", "tabs", "activeTab"],
-  "host_permissions": ["https://twitter.com/*", "https://www.linkedin.com/*"],
+  "description": "Auto-generated replies for tweets and LinkedIn posts using OpenAI.",
+  "icons": {
+    "16": "images/icons/icon-16.png",
+    "32": "images/icons/icon-32.png",
+    "48": "images/icons/icon-48.png",
+    "128": "images/icons/icon-128.png"
+  },
+  "permissions": ["activeTab"],
   "content_scripts": [
     {
       "matches": ["https://twitter.com/*", "https://www.linkedin.com/*"],
