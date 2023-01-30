@@ -1,4 +1,4 @@
-# Getreply Chrome Extension <img src="./images/getreply-logo.png" height="30px">
+# Getreply <img src="./images/getreply-logo.png" height="30px">
 
 A Google Chrome extension that auto-generates replies for tweets and LinkedIn posts using OpenAI.
 

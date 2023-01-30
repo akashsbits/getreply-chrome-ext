@@ -1,5 +1,5 @@
 {
-  "name": "Getreply Chrome Extension",
+  "name": "Getreply",
   "version": "1.0.1",
   "manifest_version": 3,
   "description": "Auto-generated replies for tweets and LinkedIn posts using OpenAI.",
